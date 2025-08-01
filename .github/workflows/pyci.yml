@@ -1,0 +1,33 @@
+name: Python CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+        # make depends on uv
+      - name: Install dependencies
+        run: |
+          pipx install uv
+          make install
+#      - name: Run linter and pytest
+      - name: Run linter
+        run: |
+          make lint
+#          make test
+#      - name: Test & publish code coverage
+#        uses: paambaati/codeclimate-action@v9.0.0
+#        if: github.ref_name == 'master'
+#        env:
+#          CC_TEST_REPORTER_ID: d2c7127a91d15cb8075d60c31cb469ce342676270022ac7299224cd758b1d1cb
+#        with:
+#          coverageCommand: make test-coverage
+#          debug: true
