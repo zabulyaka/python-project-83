@@ -15,5 +15,5 @@ conn = psycopg2.connect(DATABASE_URL)
 def index():
     return render_template(
         'index.html',
-        title='Page analyzer'
+        title='Анализатор страниц'
     )
