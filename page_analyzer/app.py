@@ -14,6 +14,13 @@ conn = psycopg2.connect(DATABASE_URL)
 @app.route('/')
 def index():
     return render_template(
-        'index.html',
-        title='Анализатор страниц'
+        'index.html'
+    )
+
+@app.route('/urls')
+def sites_show():
+    sites = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
+    return render_template(
+        'show.html',
+        sites=sites
     )

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+
+{%block main %}
+    <main class="flex-grow-1">
+        <div class="container-lg mt-3">
+            <h1>Сайты</h1>
+            <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Последняя проверка</th>
+                        <th>Код ответа</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for site in sites %}
+                    <tr>
+                        <td>{{ site["id"] }}</td>
+                        <td>
+                            <a href="{{ url_for('index') }}">{{ site["url"] }}</a>
+                        </td>
+                        <td>{{ site["last_checked"] }}</td>
+                        <td>{{ site["code_response"] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+{% endblock %}
