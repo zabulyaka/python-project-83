@@ -2,6 +2,8 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from flask import Flask, render_template
+from validators import url as is_url
+from urllib.parse import urlparse
 
 
 load_dotenv()
