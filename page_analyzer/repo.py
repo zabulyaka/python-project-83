@@ -17,16 +17,16 @@ class UrlsRepository:
         return url_id
 
     def get_urls(self):
-        with self.conn.cursor(row_factory=DictCursor) as cur:
+        with self.conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute("""
                 SELECT * FROM urls;
             """)
             return [dict(row) for row in cur]
 
     def find_url(self, id):
-        with self.conn.cursor(row_factory=DictCursor) as cur:
+        with self.conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute("""
-                SELECT * FROM urls WHERE is = %s;
+                SELECT * FROM urls WHERE id = %s;
             """, (id,))
             row = cur.fetchone()
             return dict(row) if row else None

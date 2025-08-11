@@ -1,23 +1,23 @@
-{% extends layout.html %}
+{% extends "layout.html" %}
 
 {% block main %}
     <main class="flex-grow-1">
         <div class="container-lg mt-3">
-            <h1>Сайт: {{ site["url"] }}</h1>
+            <h1>Сайт: {{ url["name"] }}</h1>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-nowrap" data-test="url">
                     <tbody>
                         <tr>
                             <td>ID</td>
-                            <td>{{ site["id"] }}
+                            <td>{{ url["id"] }}
                         </tr>
                         <tr>
                             <td>Имя</td>
-                            <td>{{ site["url"] }}</td>
+                            <td>{{ url["name"] }}</td>
                         </tr>
                         <tr>
                             <td>Дата создания</td>
-                            <td>{{ site["created_at"] }}</td>
+                            <td>{{ url["created_at"] }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -39,6 +39,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                    {% if check %}
                     {% for check in checks %}
                         <tr>
                             <td>{{ check["id"] }}</td>
@@ -50,6 +51,7 @@
                         </tr>
                     </tbody>
                     {% endfor %}
+                    {% endif %}
                 </table>
             </div>
         </div>

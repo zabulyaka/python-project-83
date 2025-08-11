@@ -15,14 +15,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for site in sites %}
+                {% for url in urls %}
                     <tr>
-                        <td>{{ site["id"] }}</td>
+                        <td>{{ url["id"] }}</td>
                         <td>
-                            <a href="{{ url_for('index') }}">{{ site["url"] }}</a>
+                            <a href="{{ url_for('index') }}">{{ url["name"] }}</a>
                         </td>
-                        <td>{{ site["last_checked"] }}</td>
-                        <td>{{ site["code_response"] }}</td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 {% endfor %}
                 </tbody>

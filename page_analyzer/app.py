@@ -10,7 +10,7 @@ from flask import (
 )
 from validators import url as is_url
 from urllib.parse import urlparse
-from repo import UrlsRepository
+from page_analyzer.repo import UrlsRepository
 from datetime import datetime
 
 
@@ -41,9 +41,10 @@ def url_error():
 #        url=url
 #    )
 
-@app.route('urls/<id>')
+@app.route('/urls/<id>')
 def url_new(id):
     url = urls_repo.find_url(id)
+#    url = {'id': 1, 'name': 'lala', 'created_at': 'hm'}
     return render_template(
         'new.html',
         url=url
@@ -51,7 +52,8 @@ def url_new(id):
 
 @app.route('/', methods=['POST'])
 def url_add():
-    form_data = request.form
+    form_data = request.form.to_dict()['url']
+#    return render_template('test.html', data=form_data['url'])
     if not is_url(form_data):
         return redirect(url_for('url_error'), code=422)
     url = urlparse(form_data)
@@ -59,19 +61,20 @@ def url_add():
     urls_data = urls_repo.get_urls()
     urls = map(lambda url: url['name'], urls_data)
     if url_norm in urls:
-        id = filter(lambda url: url['name'] == url_norm, urls_data)[0]['id']
+        id = list(filter(lambda url: url['name'] == url_norm, urls_data))[0]['id']
 #        return redirect(url_for('url_exists_already', id), code=409)
 #       ADD FLASHED
-        return redirect(url_for('url_new', id), code=409)
+        return redirect(url_for('url_new', id=id), code=409)
     today = datetime.today().strftime('%Y-%m-%d')
-    url_data = {'name': url_norm, 'created_at': today}
+#    url_data = {'name': url_norm, 'created_at': today}
+    url_data = (url_norm, today)
     id = urls_repo.add_url(url_data)
-    return redirect(url_for('url_new', id), code=300)
+    return redirect(url_for('url_new', id=id), code=300)
 
 @app.route('/urls')
 def sites_show():
-    sites = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
+    urls = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
     return render_template(
         'show.html',
-        sites=sites
+        urls=urls
     )
