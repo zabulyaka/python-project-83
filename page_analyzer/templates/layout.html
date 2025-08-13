@@ -14,12 +14,25 @@
             <div id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('sites_show') }}">Сайты</a>
+                        <a class="nav-link" href="{{ url_for('urls_show') }}">Сайты</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
+    {% if messages %}
+    {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endif %}
+        {% if category == 'warning' %}
+        <div class="alert alert-info" role="alert">{{ message }}</div>
+        {% endif %}
+        {% if category == 'success' %}
+        <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+    {% endif %}
     {% block main %}
     <main>
     </main>
