@@ -74,7 +74,8 @@ def url_add():
 #       ADD FLASHED
         return redirect(url_for('url_new', id=id), code=409)
     flash('Страница успешно добавлена', 'success')
-    today = datetime.today().strftime('%Y-%m-%d')
+#    today = datetime.today().strftime('%Y-%m-%d')
+    today = datetime.now().strftime('%Y-%m-%d')
 #    url_data = {'name': url_norm, 'created_at': today}
     url_data = (url_norm, today)
     id = urls_repo.add_url(url_data)
@@ -82,8 +83,9 @@ def url_add():
 
 @app.route('/urls')
 def urls_show():
-    urls = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
+    #urls = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
+    urls_data = urls_repo.get_urls()
     return render_template(
         'show.html',
-        urls=urls
+        urls=urls_data
     )
