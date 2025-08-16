@@ -13,7 +13,7 @@ from flask import (
 from validators import url as is_url
 from urllib.parse import urlparse
 from page_analyzer.repo import UrlsRepository
-from datetime import datetime
+#from datetime import datetime
 
 
 load_dotenv()
@@ -22,6 +22,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DATABASE_URL)
 urls_repo = UrlsRepository(conn)
+urls_repo.create_table()
 
 @app.route('/')
 def index():
@@ -72,14 +73,15 @@ def url_add():
         id = list(filter(lambda url: url['name'] == url_norm, urls_data))[0]['id']
 #        return redirect(url_for('url_exists_already', id), code=409)
 #       ADD FLASHED
-        return redirect(url_for('url_new', id=id), code=409)
+        return redirect(url_for('url_new', id=id), code=301)
     flash('Страница успешно добавлена', 'success')
 #    today = datetime.today().strftime('%Y-%m-%d')
-    today = datetime.now().strftime('%Y-%m-%d')
+#    today = datetime.now().strftime('%Y-%m-%d')
 #    url_data = {'name': url_norm, 'created_at': today}
-    url_data = (url_norm, today)
+#    url_data = (url_norm, today)
+    url_data = (url_norm,)
     id = urls_repo.add_url(url_data)
-    return redirect(url_for('url_new', id=id), code=300)
+    return redirect(url_for('url_new', id=id), code=301)
 
 @app.route('/urls')
 def urls_show():

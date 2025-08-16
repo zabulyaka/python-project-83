@@ -4,12 +4,25 @@ from psycopg2.extras import DictCursor
 class UrlsRepository:
     def __init__(self, conn):
         self.conn = conn
+    
+    def create_table(self):
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                DROP TABLE IF EXISTS urls;
+
+                CREATE TABLE urls (
+                    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+                    name VARCHAR(255) UNIQUE NOT NULL,
+                    created_at DATE DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+        self.conn.commit()
 
     def add_url(self, data):
         with self.conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO urls (name, created_at)
-                VALUES (%s, %s)
+                INSERT INTO urls (name)
+                VALUES (%s)
                 RETURNING id
             """, data)
             url_id = cur.fetchone()[0]
