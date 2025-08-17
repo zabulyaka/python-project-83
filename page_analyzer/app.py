@@ -20,8 +20,8 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
-conn = psycopg2.connect(DATABASE_URL)
-urls_repo = UrlsRepository(conn)
+#conn = psycopg2.connect(DATABASE_URL)
+#urls_repo = UrlsRepository(conn)
 #urls_repo.create_table()
 
 @app.route('/')
@@ -48,9 +48,12 @@ def url_error():
 
 @app.route('/urls/<id>')
 def url_new(id):
+    conn = psycopg2.connect(DATABASE_URL)
+    urls_repo = UrlsRepository(conn)
     url = urls_repo.find_url(id)
     messages = get_flashed_messages(with_categories=True)
 #    url = {'id': 1, 'name': 'lala', 'created_at': 'hm'}
+    conn.close()
     return render_template(
         'new.html',
         url=url,
@@ -66,6 +69,8 @@ def url_add():
         return redirect(url_for('url_error'), code=307)
     url = urlparse(form_data)
     url_norm = f'{url.scheme}://{url.hostname}'
+    conn = psycopg2.connect(DATABASE_URL)
+    urls_repo = UrlsRepository(conn)
     urls_data = urls_repo.get_urls()
     urls = map(lambda url: url['name'], urls_data)
     if url_norm in urls:
@@ -81,12 +86,16 @@ def url_add():
 #    url_data = (url_norm, today)
     url_data = (url_norm,)
     id = urls_repo.add_url(url_data)
+    conn.close()
     return redirect(url_for('url_new', id=id), code=301)
 
 @app.route('/urls')
 def urls_show():
     #urls = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
+    conn = psycopg2.connect(DATABASE_URL)
+    urls_repo = UrlsRepository(conn)
     urls_data = urls_repo.get_urls()
+    conn.close()
     return render_template(
         'show.html',
         urls=urls_data
