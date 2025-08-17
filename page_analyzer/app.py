@@ -22,7 +22,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
 conn = psycopg2.connect(DATABASE_URL)
 urls_repo = UrlsRepository(conn)
-urls_repo.create_table()
+#urls_repo.create_table()
 
 @app.route('/')
 def index():
