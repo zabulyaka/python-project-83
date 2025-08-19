@@ -59,12 +59,34 @@ class UrlsRepository:
             return url_id
 
     def get_urls(self):
+#        urls = []
+#        query = '''
+#            SELECT * FROM urls
+#        '''
         query = '''
-            SELECT * FROM urls;
+            SELECT DISTINCT ON (urls.id)
+                urls.id,
+                urls.name,
+                url_checks.status_code as code_response,
+                url_checks.created_at as last_check
+            FROM urls
+            LEFT JOIN url_checks ON
+                urls.id = url_checks.url_id
+            ORDER BY id, last_check DESC;
         '''
         with self.cursor as cur:
             cur.execute(query)
             return [dict(row) for row in cur]
+#            urls = [dict(row) for row in cur]
+#        query = '''
+#            SELECT created_at, status_code
+#            FROM url_checks
+#            WHERE url_id = (%s)
+#            ORDER_BY id DESC
+#            LIMIT 1
+#        '''
+#        for url in urls:
+#            with 
 #        with self.conn.cursor(cursor_factory=DictCursor) as cur:
 #            cur.execute("""
 #                SELECT * FROM urls;
@@ -84,3 +106,27 @@ class UrlsRepository:
 #            """, (id,))
 #            row = cur.fetchone()
             return dict(row) if row else None
+
+    def add_url_check(self, id):
+        query = '''
+            INSERT INTO url_checks (
+                url_id,
+                status_code,
+                h1,
+                title,
+                description
+            )
+            VALUES (%s, %s, %s, %s, %s)
+        '''
+        with self.cursor as cur:
+            cur.execute(query, (id, '404', 'a', 'v', 'r'))
+
+    def get_url_checks(self, id):
+        query = '''
+            SELECT * FROM url_checks
+            WHERE url_id = (%s)
+        '''
+        with self.cursor as cur:
+            cur.execute(query, (id,))
+            checks = cur.fetchall()
+            return checks

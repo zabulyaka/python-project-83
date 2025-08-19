@@ -1,7 +1,9 @@
-def get_form_data(request):
-    return request.form.to_dict()['url']
+def get_url_raw(form_data):
+    url_raw = request_data.get('url')
+    return url_raw
+#    return request.form.to_dict()['url']
 
-def get_norm_url(url_data):
+def get_url_norm(url_data):
     return f'{url_data.scheme}://{url_data.hostname}'
 
 def get_url_id(url, urls_data):

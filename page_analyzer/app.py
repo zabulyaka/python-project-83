@@ -11,10 +11,11 @@ from flask import (
     url_for
 )
 from page_analyzer.tools import (
-    get_form_data,
-    get_norm_url,
+#    get_form_data,
+    get_url_norm,
     get_url_id,
     set_url_data,
+    get_url_raw,
     url_is_already_added
 )
 from validators import url as is_url
@@ -60,23 +61,29 @@ def url_new(id):
     urls_repo = UrlsRepository(DATABASE_URL)
     url = urls_repo.find_url(id)
     messages = get_flashed_messages(with_categories=True)
+    checks = urls_repo.get_url_checks(id)
 #    url = {'id': 1, 'name': 'lala', 'created_at': 'hm'}
 #    conn.close()
     return render_template(
         'new.html',
         url=url,
-        messages=messages
+        messages=messages,
+        checks=checks
     )
 
 @app.route('/', methods=['POST'])
 def url_add():
 #    form_data = request.form.to_dict()['url']
-    form_data = get_form_data(request)
+#    form_data = get_form_data(request)
+    form_data = request.form.to_dict()
+    url_raw = get_url_raw(form_data)
 #    return render_template('test.html', data=form_data['url'])
-    if not is_url(form_data):
+#    if not is_url(form_data):
+    if not is_url(url_raw):
         flash('Некорректный URL', 'error')
         return redirect(url_for('url_error'), code=307)
-    url_data = urlparse(form_data)
+#    url_data = urlparse(form_data)
+    url_data = urlparse(url_raw)
 #    url_norm = f'{url_data.scheme}://{url_data.hostname}'
     url_norm = get_norm_url(url_data)
 #    conn = psycopg2.connect(DATABASE_URL)
@@ -116,8 +123,8 @@ def urls_show():
         urls=urls_data
     )
 
-#@app.route('/urls/<id>/checks')
-#def url_check(id):
-#    return render_template(
-#        
-#    )
+@app.route('/urls/<id>/checks', methods=['POST'])
+def url_check_new(id):
+    urls_repo = UrlsRepository(DATABASE_URL)
+    urls_repo.add_url_check(id)
+    return redirect(url_for('url_new', id=id), code=301)
