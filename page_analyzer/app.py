@@ -85,7 +85,7 @@ def url_add():
 #    url_data = urlparse(form_data)
     url_data = urlparse(url_raw)
 #    url_norm = f'{url_data.scheme}://{url_data.hostname}'
-    url_norm = get_norm_url(url_data)
+    url_norm = get_url_norm(url_data)
 #    conn = psycopg2.connect(DATABASE_URL)
 #    urls_repo = UrlsRepository(conn)
     urls_repo = UrlsRepository(DATABASE_URL)

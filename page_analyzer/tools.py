@@ -1,5 +1,5 @@
 def get_url_raw(form_data):
-    url_raw = request_data.get('url')
+    url_raw = form_data.get('url')
     return url_raw
 #    return request.form.to_dict()['url']
 
