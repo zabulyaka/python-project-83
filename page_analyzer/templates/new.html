@@ -23,7 +23,7 @@
                 </table>
             </div>
             <h2 class="mt-5 mb-3">Проверки</h2>
-            <form method="post" action="">
+            <form method="post" action="{{ url_for("url_new", id=url["id"]) }}">
                 <input class="btn btn-primary" type="submit" value="Запустить проверку">
             </form>
             <div>

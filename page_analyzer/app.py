@@ -1,5 +1,5 @@
 import os
-import psycopg2
+#import psycopg2
 from dotenv import load_dotenv
 from flask import (
     Flask,
@@ -9,6 +9,13 @@ from flask import (
     request,
     redirect,
     url_for
+)
+from page_analyzer.tools import (
+    get_form_data,
+    get_norm_url,
+    get_url_id,
+    set_url_data,
+    url_is_already_added
 )
 from validators import url as is_url
 from urllib.parse import urlparse
@@ -48,12 +55,13 @@ def url_error():
 
 @app.route('/urls/<id>')
 def url_new(id):
-    conn = psycopg2.connect(DATABASE_URL)
-    urls_repo = UrlsRepository(conn)
+#    conn = psycopg2.connect(DATABASE_URL)
+#    urls_repo = UrlsRepository(conn)
+    urls_repo = UrlsRepository(DATABASE_URL)
     url = urls_repo.find_url(id)
     messages = get_flashed_messages(with_categories=True)
 #    url = {'id': 1, 'name': 'lala', 'created_at': 'hm'}
-    conn.close()
+#    conn.close()
     return render_template(
         'new.html',
         url=url,
@@ -62,20 +70,25 @@ def url_new(id):
 
 @app.route('/', methods=['POST'])
 def url_add():
-    form_data = request.form.to_dict()['url']
+#    form_data = request.form.to_dict()['url']
+    form_data = get_form_data(request)
 #    return render_template('test.html', data=form_data['url'])
     if not is_url(form_data):
         flash('Некорректный URL', 'error')
         return redirect(url_for('url_error'), code=307)
-    url = urlparse(form_data)
-    url_norm = f'{url.scheme}://{url.hostname}'
-    conn = psycopg2.connect(DATABASE_URL)
-    urls_repo = UrlsRepository(conn)
+    url_data = urlparse(form_data)
+#    url_norm = f'{url_data.scheme}://{url_data.hostname}'
+    url_norm = get_norm_url(url_data)
+#    conn = psycopg2.connect(DATABASE_URL)
+#    urls_repo = UrlsRepository(conn)
+    urls_repo = UrlsRepository(DATABASE_URL)
     urls_data = urls_repo.get_urls()
-    urls = map(lambda url: url['name'], urls_data)
-    if url_norm in urls:
+#    urls = map(lambda url: url['name'], urls_data)
+#    if url_norm in urls:
+    if url_is_already_added(url_norm, urls_data):
         flash('Страница уже существует', 'warning')
-        id = list(filter(lambda url: url['name'] == url_norm, urls_data))[0]['id']
+        id = get_url_id(url_norm, urls_data)
+#        id = list(filter(lambda url: url['name'] == url_norm, urls_data))[0]['id']
 #        return redirect(url_for('url_exists_already', id), code=409)
 #       ADD FLASHED
         return redirect(url_for('url_new', id=id), code=301)
@@ -84,19 +97,27 @@ def url_add():
 #    today = datetime.now().strftime('%Y-%m-%d')
 #    url_data = {'name': url_norm, 'created_at': today}
 #    url_data = (url_norm, today)
-    url_data = (url_norm,)
+#    url_data = (url_norm,)
+    url_data = set_url_data(url_norm)
     id = urls_repo.add_url(url_data)
-    conn.close()
+#    conn.close()
     return redirect(url_for('url_new', id=id), code=301)
 
 @app.route('/urls')
 def urls_show():
     #urls = [{'id': 1, 'url': 'lala', 'last_checked': 'hm', 'code_response': 404}]
-    conn = psycopg2.connect(DATABASE_URL)
-    urls_repo = UrlsRepository(conn)
+#    conn = psycopg2.connect(DATABASE_URL)
+#    urls_repo = UrlsRepository(conn)
+    urls_repo = UrlsRepository(DATABASE_URL)
     urls_data = urls_repo.get_urls()
-    conn.close()
+#    conn.close()
     return render_template(
         'show.html',
         urls=urls_data
     )
+
+#@app.route('/urls/<id>/checks')
+#def url_check(id):
+#    return render_template(
+#        
+#    )
