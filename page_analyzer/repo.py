@@ -67,12 +67,12 @@ class UrlsRepository:
             SELECT DISTINCT ON (urls.id)
                 urls.id,
                 urls.name,
-                url_checks.status_code as code_response,
-                url_checks.created_at as last_check
+                url_checks.status_code,
+                url_checks.created_at
             FROM urls
             LEFT JOIN url_checks ON
                 urls.id = url_checks.url_id
-            ORDER BY id, last_check DESC;
+            ORDER BY id, created_at DESC;
         '''
         with self.cursor as cur:
             cur.execute(query)
@@ -107,7 +107,7 @@ class UrlsRepository:
 #            row = cur.fetchone()
             return dict(row) if row else None
 
-    def add_url_check(self, id):
+    def add_url_check(self, data):
         query = '''
             INSERT INTO url_checks (
                 url_id,
@@ -119,7 +119,7 @@ class UrlsRepository:
             VALUES (%s, %s, %s, %s, %s)
         '''
         with self.cursor as cur:
-            cur.execute(query, (id, '404', 'a', 'v', 'r'))
+            cur.execute(query, data)
 
     def get_url_checks(self, id):
         query = '''
