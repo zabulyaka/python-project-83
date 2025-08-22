@@ -2,6 +2,7 @@ import os
 #import psycopg2
 import requests
 from dotenv import load_dotenv
+#from bs4 import BeautifulSoup
 from flask import (
     Flask,
     flash,
@@ -15,12 +16,14 @@ from page_analyzer.tools import (
 #    get_form_data,
     get_url_norm,
     get_url_id,
+    extract_html_info,
     set_url_data,
+    norm_urls_data,
     get_url_raw,
     url_is_already_added
 )
 from validators import url as is_url
-from urllib.parse import urlparse
+#from urllib.parse import urlparse
 from page_analyzer.repo import UrlsRepository
 #from datetime import datetime
 
@@ -91,9 +94,10 @@ def url_add():
         flash(INCORRECT_URL_MSG, 'error')
         return redirect(url_for('url_error'), code=ERROR)
 #    url_data = urlparse(form_data)
-    url_data = urlparse(url_raw)
+#    url_data = urlparse(url_raw)
 #    url_norm = f'{url_data.scheme}://{url_data.hostname}'
-    url_norm = get_url_norm(url_data)
+#    url_norm = get_url_norm(url_data)
+    url_norm = get_url_norm(url_raw)
 #    conn = psycopg2.connect(DATABASE_URL)
 #    urls_repo = UrlsRepository(conn)
     urls_repo = UrlsRepository(DATABASE_URL)
@@ -125,10 +129,13 @@ def urls_show():
 #    urls_repo = UrlsRepository(conn)
     urls_repo = UrlsRepository(DATABASE_URL)
     urls_data = urls_repo.get_urls()
+#    return render_template('test.html', data=urls_data)
+    urls_data_norm = norm_urls_data(urls_data)
+#    return render_template('test.html', data=urls_data_norm)
 #    conn.close()
     return render_template(
         'show.html',
-        urls=urls_data
+        urls=urls_data_norm
     )
 
 @app.route('/urls/<id>/checks', methods=['POST'])
@@ -142,11 +149,20 @@ def url_check_new(id):
     except requests.RequestException as e:
         flash(CHECK_ERROR_MSG, 'error')
         return redirect(url_for('url_new', id=id), code=ERROR)
+#    return render_template('test.html', data=req.text)
+    html_info = extract_html_info(req.text)
+#    soup = BeautifulSoup(req.text, 'html.parser')
+#    title = soup.title.string if soup.title.string else ''
+#    h1 = soup.h1.string if soup.h1 else ''
+#    description = soup.find(name='description')
+#    content = description['content'] if description else ''
+#    return render_template('test.html', data=html_info)
 #    except requests.exceptions.HTTPError as e:
 #        return redirect(url_for('index'))
 #    except requests.exceptions.ConnectionError as e:
 #        return redirect(url_for('index'))
-    check_data = (id, req.status_code, 'd', 'e', 'y')
+#    check_data = (id, req.status_code, 'd', 'e', 'y')
+    check_data = (id, req.status_code, *html_info)
     urls_repo.add_url_check(check_data)
 #    return render_template('test.html', data=req.status_code)
 #    urls_repo = UrlsRepository(DATABASE_URL)
