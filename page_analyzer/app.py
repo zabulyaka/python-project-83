@@ -1,29 +1,27 @@
 import os
+
 import requests
 from dotenv import load_dotenv
 from flask import (
     Flask,
     flash,
     get_flashed_messages,
+    redirect,
     render_template,
     request,
-    redirect,
-    url_for
-)
-from page_analyzer.tools import (
-    get_url_id,
-    set_url_data,
-    norm_urls_data,
-    get_url_raw,
-    url_is_already_added
-)
-from page_analyzer.parse import (
-    get_url_norm,
-    extract_html_info
+    url_for,
 )
 from validators import url as is_url
-from page_analyzer.repo import UrlsRepository
 
+from page_analyzer.parse import extract_html_info, get_url_norm
+from page_analyzer.repo import UrlsRepository
+from page_analyzer.tools import (
+    get_url_id,
+    get_url_raw,
+    norm_urls_data,
+    set_url_data,
+    url_is_already_added,
+)
 
 load_dotenv()
 app = Flask(__name__)
@@ -44,6 +42,7 @@ def index():
         'index.html'
     )
 
+
 @app.route('/urls', methods=['POST'])
 def url_error():
     messages = get_flashed_messages(with_categories=True)
@@ -51,6 +50,7 @@ def url_error():
         'index.html',
         messages=messages
     ), 422
+
 
 @app.route('/urls/<id>', methods=['GET', 'POST'])
 def url_new(id):
@@ -64,6 +64,7 @@ def url_new(id):
         messages=messages,
         checks=checks
     )
+
 
 @app.route('/', methods=['POST'])
 def url_add():
@@ -84,6 +85,7 @@ def url_add():
     id = urls_repo.add_url(url_data)
     return redirect(url_for('url_new', id=id), code=SUCCESS)
 
+
 @app.route('/urls')
 def urls_show():
     urls_repo = UrlsRepository(DATABASE_URL)
@@ -93,6 +95,7 @@ def urls_show():
         'show.html',
         urls=urls_data_norm
     )
+
 
 @app.route('/urls/<id>/checks', methods=['POST'])
 def url_check_new(id):

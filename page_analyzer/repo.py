@@ -18,6 +18,7 @@ class DatabaseConnection:
         self.conn.commit()
         self.conn.close()
 
+
 class UrlsRepository:
     def __init__(self, db_url):
         self.cursor = DatabaseConnection(db_url)

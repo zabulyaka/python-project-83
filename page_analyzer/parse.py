@@ -1,9 +1,12 @@
-from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+
+from bs4 import BeautifulSoup
+
 
 def get_url_norm(url):
     url_data = urlparse(url)
     return f'{url_data.scheme}://{url_data.hostname}'
+
 
 def extract_html_info(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -12,9 +15,10 @@ def extract_html_info(html):
         title = ''
     h1 = soup.h1.string if soup.h1 else ''
     metas = soup.find_all('meta')
-    metas_filtered = list(filter(lambda meta: meta.get('name') == 'description', metas))
+    m_filtered = list(filter(lambda meta: meta.get('name') == 'description',
+        metas))
     desc_content = ''
-    if metas_filtered:
-        description = metas_filtered[0]
+    if m_filtered:
+        description = m_filtered[0]
         desc_content = description.get('content')
     return (h1, title, desc_content)
