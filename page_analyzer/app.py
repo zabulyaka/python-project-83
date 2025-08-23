@@ -14,13 +14,17 @@ from flask import (
 )
 from page_analyzer.tools import (
 #    get_form_data,
-    get_url_norm,
+#    get_url_norm,
     get_url_id,
-    extract_html_info,
+#    extract_html_info,
     set_url_data,
     norm_urls_data,
     get_url_raw,
     url_is_already_added
+)
+from page_analyzer.parse import (
+    get_url_norm,
+    extract_html_info
 )
 from validators import url as is_url
 #from urllib.parse import urlparse
