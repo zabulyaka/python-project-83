@@ -50,7 +50,7 @@ def url_error():
     return render_template(
         'index.html',
         messages=messages
-    )
+    ), 422
 
 @app.route('/urls/<id>', methods=['GET', 'POST'])
 def url_new(id):
